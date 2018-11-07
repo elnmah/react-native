@@ -6,9 +6,13 @@ import Inverter, { MegaSena } from './components/Multi';
 import Contador from './components/Contador';
 import Plataformas from './components/Plataformas';
 import ValidarProps from './components/ValidarProps';
+import Evento from './components/Evento';
 
 //lista dos menus e componente que vai ser carregado quando o usuario clicar no menu
 export default createDrawerNavigator ({
+    Evento:{
+      screen: Evento
+    },
     ValidarProps:{
         screen: () => <ValidarProps label={"Teste: "}  ano={18}/>
     },
