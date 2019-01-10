@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-   baseURL: 'http://rocketseat-node.herokuapp.com/api'
+   baseURL: 'http://192.168.0.111:3000/v1'
 });
 
 export default api;

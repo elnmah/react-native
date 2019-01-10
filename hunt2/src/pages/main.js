@@ -1,5 +1,5 @@
 import React , {Component} from 'react';
-import {View , Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View , Text, FlatList, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import api from '../services/api'
 
 export default class Main extends Component{
@@ -9,9 +9,7 @@ export default class Main extends Component{
     };
 
     state = {
-        productInfo:{},
-        docs: [],
-        page:1,
+        users: []
     };
 //disparado assim que o component é exibido na tela, metodo inicial
     componentDidMount(){
@@ -20,44 +18,58 @@ export default class Main extends Component{
     // usar a função desta maneira para que não crie um nome escopo de função e sim use
     // o proprio escopo da classe, assim conseguimos usar o this na nossa propria funcao
     loadProducts = async (page = 1) => {
-        const response = await api.get(`/products?pages=${page}`);
-        const { docs, ...productInfo } = response.data;
+        const response = await api.get(`/user?pages=${page}`);
+        let users = response.data;
 // passa as variavgeis que quer alterar - -sobreescreve as informacoes do estado setState
 //paga pegar todos os itens anteriores ...
-        this.setState({docs:[... this.state.docs, ...docs], productInfo, page });
+        this.setState({users:[... this.state.users, ...users] });
     };
 
-    loadMore = () => {
-        const { page, productInfo} = this.state
-
-        if(page === productInfo.page) return;
-        const pageNumber = page + 1;
-
-        this.loadProducts(pageNumber);
-    };
     renderItem = ({item}) => (
-        <View style={styles.productContainer}>
-            <Text style={styles.productTitle}>{item.title}</Text>
-            <Text style={styles.productDescription}>{item.description}</Text>
-            <TouchableOpacity style={styles.productButton} onPress={() => {
-                this.props.navigation.navigate('Product', {product: item})
-            }}>
-                <Text style={styles.productButtonText}> Acessar </Text>
-            </TouchableOpacity>
+        <View style={styles.productContainer} id={item._id}>
+            <Text style={styles.productTitle}>{item.status}</Text>
+            <Text style={styles.productTitle}>{item.nome}</Text>
+            <Text style={styles.productTitle}>{item.dataCadastro}</Text>
         </View>
     );
+    handlePress = async () => {
+        fetch('http://192.168.0.111:3000/v1/user', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nome: 'test'
+            })
+        })
+            .then((response) => response.json())
+            .then((responseData) => {
+                console.log(
+                    "POST Response",
+                    "Response Body -> " + JSON.stringify(responseData)
+                )
+            })
+            .done();
+    }
+
     //percorrer um array -> map
     render(){
         return(
             <View style={styles.container}>
                 <FlatList
                     contentContainerStyle={styles.list}
-                    data={this.state.docs}
+                    data={this.state.users}
                     keyExtractor={item => item._id}
                     renderItem={this.renderItem}
                     onEndReached={this.loadMore}
                     onEndReachedThreshold={0.1}
                 />
+                <View style={styles.container}>
+                    <TouchableOpacity style={styles.productButton} onPress={this.handlePress.bind(this)}>
+                        <Text> ADD </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -82,13 +94,13 @@ const styles = StyleSheet.create({
         marginBottom:20
     },
     productTitle:{
-        fontsize:18,
+        fontSize:18,
         fontWeight:'bold',
         color:'#333'
 
     },
     productDescription:{
-        fontsize:16,
+        fontSize:16,
         color:'#999',
         marginTop:5,
         lineHeight:24,
@@ -105,7 +117,7 @@ const styles = StyleSheet.create({
 
     },
     productButtonText:{
-        fontsize:16,
+        fontSize:16,
         color:'#DA552F',
         fontWeight:'bold',
 
