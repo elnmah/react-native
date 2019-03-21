@@ -1,28 +1,20 @@
-import React, {Component} from 'react'
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
-import Tela1 from './src/screens/Tela1'
+import React , { Component } from 'react'
+import {createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import Home from './src/screens/Home'
 import Tela2 from './src/screens/Tela2'
 
-const AppNavigator = createBottomTabNavigator({
-    Tela1:{
-        screen:Tela1,
-        navigationOptions:{
-            title:'Tela1'
-        }
+const Navegador = createBottomTabNavigator({
+    Home:{
+        screen:Home
     },
     Tela2:{
         screen:Tela2
     }
 }, {
-    defaultNavigationOptions:{
-        tabBarOptions:{
-            showIcon:false,
-            labelStyle:{
-                fontSize:30,
-            }
-        }
+    defaultNavigationOption:{
+
     }
 
 })
 
-export default createAppContainer(AppNavigator)
+export default createAppContainer(Navegador)
