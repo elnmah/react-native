@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
-import firebase from 'firebase'
+import Firebase from './firebase'
 
 export default class App extends Component {
     constructor(props){
@@ -8,29 +8,24 @@ export default class App extends Component {
         this.state ={
             nome:'',
             email:'',
-            senha:''
+            senha:'',
+            uid:'',
+            addItemTxt:''
         }
 
         this.logar = this.logar.bind(this);
-
-        //autentificação do servidor firebase
-        let config = {
-            apiKey: "AIzaSyASPzz_UPkgE6-OPmQAC6vzi9P8tfjHNcw",
-            authDomain: "projeto-teste-5de81.firebaseapp.com",
-            databaseURL: "https://projeto-teste-5de81.firebaseio.com",
-            projectId: "projeto-teste-5de81",
-            storageBucket: "projeto-teste-5de81.appspot.com",
-            messagingSenderId: "1000958744261"
-        };
-        firebase.initializeApp(config);
+        this.add = this.add.bind(this);
 
         // se tiver alguma user logado, sera deslogada
-        firebase.auth().signOut()
+        Firebase.auth().signOut()
         //olheiro
-        firebase.auth().onAuthStateChanged((user)=>{
+        Firebase.auth().onAuthStateChanged((user)=>{
             if(user){
+                let s = this.state
+                s.uid = user.uid
+                this.setState(s)
                 //user.uid
-                firebase.database().ref('usuarios').child(user.uid).once('value').then((snapshot) =>{
+                Firebase.database().ref('usuarios').child(user.uid).once('value').then((snapshot) =>{
                     let nome = snapshot.val().nome
                     alert("Seja bem vindo(a)," + nome)
                 })
@@ -39,24 +34,33 @@ export default class App extends Component {
 
     }
     logar(){
-        firebase.auth().signInWithEmailAndPassword(
+        Firebase.auth().signInWithEmailAndPassword(
             this.state.email,
             this.state.senha
         ).catch((error)=>{
             alert(error.code)
         })
     }
+    add(){
+        if(this.state.uid != ''){
 
+        }
+    }
 
     render() {
         return (
             <View style={styles.container}>
-              <Text style={styles.h1}>Tela de login</Text>
-              <Text>E-mail:</Text>
-              <TextInput style={styles.input} onChangeText={(email)=> this.setState({email})} />
-              <Text>Senha:</Text>
-              <TextInput style={styles.input} secureTextEntry={true} onChangeText={(senha)=> this.setState({senha})} />
-              <Button title="Logar" onPress={this.logar} />
+                <Text style={styles.h1}>Tela de login</Text>
+                <Text>E-mail:</Text>
+                <TextInput style={styles.input} onChangeText={(email)=> this.setState({email})} />
+                <Text>Senha:</Text>
+                <TextInput style={styles.input} secureTextEntry={true} onChangeText={(senha)=> this.setState({senha})} />
+                <Button title="Logar" onPress={this.logar} />
+                <View style={styles.addArea}>
+                    <Text>Adicione um item</Text>
+                    <TextInput style={styles.input} onChangeText={(addItemTxt)=> this.setState({addItemTxt})}/>
+                    <Button title="Adcionar" onPress={this.add} />
+                </View>
             </View>
         );
     }
@@ -77,5 +81,8 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:'#000',
         margin:10
+    },
+    addArea:{
+
     }
 });
